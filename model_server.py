@@ -7,13 +7,17 @@ app = Flask(__name__)
 # Hugging Face modelini buradan yüklüyoruz (Render otomatik indirir)
 pipe = pipeline("text2text-generation", model="memorease/memorease-flan-t5")
 
-@app.route("/generate", methods=["POST"])
+@app.route("/api/generate", methods=["POST"])
 def generate():
     data = request.get_json()
     raw_input = data.get("inputs", "")
     final_prompt = f"Generate a question about: {raw_input}"  # 🧠 Promptu burada yönlendiriyoruz
     result = pipe(final_prompt)
     return jsonify(result)
+
+@app.route("/", methods=["GET"])
+def root():
+    return "Server is running", 200
 
 
 if __name__ == "__main__":
