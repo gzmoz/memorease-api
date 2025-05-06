@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from transformers import pipeline
+import os
 
 app = Flask(__name__)
 
@@ -9,9 +10,12 @@ pipe = pipeline("text2text-generation", model="memorease/memorease-flan-t5")
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.get_json()
-    inputs = data.get("inputs", "")
-    result = pipe(inputs)
+    raw_input = data.get("inputs", "")
+    final_prompt = f"Generate a question about: {raw_input}"  # 🧠 Promptu burada yönlendiriyoruz
+    result = pipe(final_prompt)
     return jsonify(result)
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))  # Render’ın verdiği portu kullan
+    app.run(host="0.0.0.0", port=port)
